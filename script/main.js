@@ -1,4 +1,5 @@
-//Base de datos de fichas de personajes
+// BASE DE DATOS: fichas de personajes
+
 class Personaje {
     constructor(nombre, imagen) {
         this.nombre = nombre
@@ -17,53 +18,33 @@ const personajes = [
     new Personaje("Hodor", "imagen")
 ]
 
-/******  SIMULANDO EL MEMOTEST CON PROMPTS ********/
+// FUNCIONES: barajar, eliminacion, proceso principal
 
-//Funcion para barajar aleatoriamente las fichas de juego
-
+// barajar fichas
 function barajar(array) {
     array.sort(() => Math.random() - 0.5)
 }
-const fichasBarajadas = personajes.concat(personajes)
-barajar(fichasBarajadas)
 
-alert("Simulacion de memotest: Tenemos 16 fichas, cada una representa a un personaje que se repite dos veces (son 8 personajes). ¡OJO! La simulacion se rompe si se ingresan numeros fuera del rango")
-
-//ciclo para repetir solicitud hasta eliminar todas las fichas
-
-let eleccionA = 0
-let eleccionB = 0
-
-while (fichasBarajadas.length != 0) {
-
-    //prompts para ingresar seleccion de fichas 
-
-    eleccionA = parseInt(prompt(`Elija una ficha indicando numero del 0 al ${fichasBarajadas.length - 1}. ¡Recuerda el numero!`))
-    alert(`Encontraste a ${fichasBarajadas[eleccionA].nombre}. ¡No lo olvides!`)
-
-    eleccionB = parseInt(prompt(`Elija otra ficha indicando numero del 0 al ${fichasBarajadas.length - 1}.`))
-
-    //while para evitar la trampa (elegir dos veces el mismo numero)
+// evitando la trampa
+function antiTrampa(eleccionA, eleccionB) {
 
     while (eleccionA === eleccionB) {
         eleccionB = parseInt(prompt("¡NO HAGAS TRAMPA! Elegi una ficha diferente."))
     }
 
     alert(`Encontraste a ${fichasBarajadas[eleccionB].nombre}.`)
+}
 
-
-    //condicional para eliminar fichas coincidentes
+// eliminando coincidencias
+function comparacion(eleccionA, eleccionB) {
 
     if (fichasBarajadas[eleccionA].nombre === fichasBarajadas[eleccionB].nombre) {
 
         alert(`¡Felicitaciones! Encontraste al par ${fichasBarajadas[eleccionB].nombre}`)
 
-        /* aca debo convertir el numero de la eleccion en el nombre, ya que al aplicar splice dos veces
-        me cambia le indice del segundo a eliminar */
-
+        //conviritendo index a nombre para evitar cambio de numero
         let eliminacion = fichasBarajadas[eleccionA].nombre
 
-        //ciclo for para eliminar pareja encontrada
         for (let i = 0; i < fichasBarajadas.length; i++) {
 
             if (fichasBarajadas[i].nombre === eliminacion) {
@@ -71,6 +52,8 @@ while (fichasBarajadas.length != 0) {
             }
 
         }
+
+        //repeticion del bucle para evitar omision de parejas contiguas
         for (let i = 0; i < fichasBarajadas.length; i++) {
 
             if (fichasBarajadas[i].nombre === eliminacion) {
@@ -78,9 +61,28 @@ while (fichasBarajadas.length != 0) {
             }
 
         }
-        /* El ciclo For se repite ya que si las fichas quedaban contiguas, el ciclo solo eliminaba 
-        a la primera y dejaba a la segunda sin su par. */
     }
+
 }
 
-alert("¡¡FELICITACIONES!! Encontraste todas las parejas.")
+//ejecucion del juego
+function procesoPrincipal() {
+    alert("Simulacion de memotest")
+
+    const fichasBarajadas = personajes.concat(personajes)
+    barajar(fichasBarajadas)
+
+    while (fichasBarajadas.length != 0) {
+
+        let eleccionA = parseInt(prompt(`Elija una ficha indicando numero del 0 al ${fichasBarajadas.length - 1}. ¡Recuerda el numero!`))
+        alert(`Encontraste a ${fichasBarajadas[eleccionA].nombre}. ¡No lo olvides!`)
+
+        let eleccionB = parseInt(prompt(`Elija otra ficha indicando numero del 0 al ${fichasBarajadas.length - 1}.`))
+
+        antiTrampa(eleccionA, eleccionB)
+
+        comparacion(eleccionA, eleccionB)
+
+    }
+    alert("¡¡FELICITACIONES!! Encontraste todas las parejas.")
+}

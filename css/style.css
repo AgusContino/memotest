@@ -1,0 +1,53 @@
+body {
+  margin: 0;
+  background-image: url(../media/kings-landing.webp);
+}
+
+header {
+  height: 10vh;
+}
+header h1 {
+  text-align: center;
+  margin: 0;
+}
+
+main {
+  height: 85vh;
+}
+
+footer {
+  height: 5vh;
+}
+footer h3 {
+  text-align: center;
+  margin: 0;
+}
+
+.tablero {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 50px 30vw 50px 30vw;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  justify-items: center;
+}
+
+.tablero__ficha {
+  border: 2px solid black;
+  border-radius: 10px;
+  height: 15vh;
+}
+.tablero__ficha:hover {
+  scale: 1.1;
+}
+.tablero__ficha:active {
+  translate: 3px 2px;
+}
+.tablero__ficha img {
+  height: 100%;
+  object-fit: cover;
+}
+
+/*# sourceMappingURL=style.css.map */

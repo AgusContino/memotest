@@ -1,10 +1,10 @@
 // BASE DE DATOS: fichas de personajes
 
 class Personaje {
-    constructor(nombre, imagen, seleccionado) {
+    constructor(nombre, imagen, hallado) {
         this.nombre = nombre
         this.imagen = imagen
-        this.seleccionado = seleccionado
+        this.hallado = hallado
     }
 }
 
@@ -19,8 +19,137 @@ const personajes = [
     new Personaje("Hodor", "../media/personajes/hodor.jpg", false)
 ]
 
+// SETEO DEL JUEGO
+
+// Generando mazo y barajandolo
+const mazo = personajes.concat(personajes)
+const barajar = ((array) => {
+    array.sort(() => Math.random() - 0.5)
+})(mazo)
+
+// tomando del documento elementos de las fichas
+const divs = document.getElementsByClassName("tablero__ficha") //divs contenedores
+const dorso = document.getElementsByClassName("tablero__ficha--dorso") //img del trono
+const retrato = document.getElementsByClassName("tablero__ficha--retrato") //img del personaje
+
+for (let i = 0; i < retrato.length; i++) { // repartiendo retratos ocultos
+
+    retrato[i].style.display = "none"
+    retrato[i].src = mazo[i].imagen
+    retrato[i].alt = `Retrato de ${mazo[i].nombre}`
+
+}
+
+//generando los objetos ficha
+class Ficha {
+    constructor(ficha, personaje, dorso, retrato, tocada) {
+        this.ficha = ficha
+        this.personaje = personaje
+        this.dorso = dorso
+        this.retrato = retrato
+        this.tocada = tocada
+    }
+}
+
+const fichas = [] // Array con los objetos ficha
+for (let i = 0; i < divs.length; i++) {
+
+    fichas.push(new Ficha(divs[i], mazo[i], dorso[i], retrato[i], false))
+
+}
+
+// PROCESO DEL JUEGO - Acciones y eventos
+
+let elecciones = []
+let eleccionA = ""
+let eleccionB = ""
+let victoria = 0
+
+for (let i = 0; i < fichas.length; i++) {
+
+    fichas[i].ficha.addEventListener("click", () => {
+
+        if (fichas[i].personaje.hallado === false) {
+
+            if (elecciones.length === 1 && fichas[i].tocada === false) {
+
+                console.log(elecciones[0].personaje.nombre)
+                console.log(fichas[i].personaje.nombre)
+
+                elecciones.push(fichas[i])
+
+                fichas[i].retrato.style.display = "block"
+                fichas[i].dorso.style.display = "none"
+
+            }
+
+            if (elecciones.length === 0) {
+
+                elecciones.push(fichas[i])
+
+                fichas[i].retrato.style.display = "block"
+                fichas[i].dorso.style.display = "none"
+                fichas[i].tocada = true
+                console.log(fichas[i])
+            }
+
+
+            if (elecciones.length === 2) {
+
+                eleccionA = elecciones[0].personaje.nombre
+                eleccionB = elecciones[1].personaje.nombre
+
+                if (eleccionA === eleccionB) {
+
+                    for (const ficha of fichas) {
+
+                        if (eleccionA === ficha.personaje.nombre) {
+
+                            ficha.personaje.hallado = true
+                            console.log(ficha)
+
+                        }
+                    }
+
+                    elecciones = []
+                    eleccionA = ""
+                    eleccionB = ""
+                    victoria = victoria + 2
+
+                    if (victoria === fichas.length) {
+                        setTimeout(() => {
+                            alert("GANASTE")
+                        }, 1000);
+                    }
+
+                } else {
+
+                    setTimeout(() => {
+
+                        for (let index = 0; index < fichas.length; index++) {
+
+                            if (fichas[index].personaje.hallado === false) {
+                                fichas[index].dorso.style.display = "block"
+                                fichas[index].retrato.style.display = "none"
+                                fichas[index].tocada = false
+                            }
+
+                        }
+
+                        elecciones = []
+                        eleccionA = ""
+                        eleccionB = ""
+
+                    }, 1000);
+                }
+            }
+        }
+    })
+}
+
 // REGISTRO DE JUGADOR
 
+/*
 const modal = document.getElementById("modal")
 modal.showModal()
 
@@ -44,37 +173,7 @@ submit.addEventListener("click",()=>{
     jugadorEdad.innerText = jugadorActual.edad
 
 })
-
-// SETEO DEL JUEGO
-
-const mazo = personajes.concat(personajes)
-
-const barajar = ((array) => {
-    array.sort(() => Math.random() - 0.5)
-})(mazo)
-
-const fichas = document.getElementsByClassName("tablero__ficha") //divs contenedores
-
-const dorso = document.getElementsByClassName("tablero__ficha--dorso") //img del trono
-
-for (let i = 0; i < fichas.length; i++) {
-
-    let retrato = document.createElement("img") //img de personaje
-    fichas[i].append(retrato)
-    retrato.style.display = "none"
-    retrato.src = mazo[i].imagen
-    retrato.alt = `Retrato de ${mazo[i].nombre}`
-
-    fichas[i].addEventListener("click", () => {
-
-        retrato.style.display = "block"
-        dorso[i].style.display = "none"
-
-    })
-
-}
-
-
+*/
 
 // codigo momentaneamente en desuso
 /*

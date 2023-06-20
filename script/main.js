@@ -212,7 +212,7 @@ function controladorDelJuego(fichas) {
 
 const iniciarJuego = async () => {
 
-   const response = await fetch("/script/personajes.json")
+   const response = await fetch("./script/personajes.json")
    const personajes = await response.json()
 
    const mazo = generarMazo(personajes)

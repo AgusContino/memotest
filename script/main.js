@@ -1,210 +1,246 @@
-// BASE DE DATOS: fichas de personajes
+// REGISTRO DE JUGADOR
 
-class Personaje {
-    constructor(nombre, imagen, hallado) {
-        this.nombre = nombre
-        this.imagen = imagen
-        this.hallado = hallado
-    }
+const jugador = document.getElementById("jugador")
+const jugadorEdad = document.getElementById("jugadorEdad")
+
+Swal.fire({
+
+   title: 'Registrate',
+   html: `<input type="text" id="nombre" class="swal2-input" placeholder="Nombre">
+            <input type="number" id="edad" class="swal2-input" placeholder="Edad">`,
+   confirmButtonText: 'Registrarse',
+   focusConfirm: false,
+
+   preConfirm: () => {
+      const nombre = Swal.getPopup().querySelector('#nombre').value
+      const edad = Swal.getPopup().querySelector('#edad').value
+      if (!nombre || !edad) {
+         Swal.showValidationMessage(`Por favor, ingrese nombre y edad`)
+      }
+      return { nombre: nombre, edad: edad }
+   }
+
+}).then((result) => {
+
+   const nuevoJugador = {
+      nombre: result.value.nombre,
+      edad: result.value.edad
+   }
+
+   localStorage.setItem("NuevoJugador", JSON.stringify(nuevoJugador))
+
+   const jugadorActual = JSON.parse(localStorage.getItem("NuevoJugador"))
+   jugador.innerText = jugadorActual.nombre
+   jugadorEdad.innerText = jugadorActual.edad
+
+})
+
+// ----- ACCIONES PARA SETEAR EL JUEGO -------
+
+//accion para generar el array mazo
+function generarMazo(personajes) {
+   return personajes.concat(personajes)
 }
 
-const personajes = [
-    new Personaje("Daenerys Targaryen", "../media/personajes/daenerys-targaryen.jpg", false),
-    new Personaje("Jon Snow", "../media/personajes/jon-snow.jpg", false),
-    new Personaje("Drogon", "../media/personajes/drogon.jpg", false),
-    new Personaje("Ned Stark", "../media/personajes/ned-stark.webp", false),
-    new Personaje("El señor de la noche", "../media/personajes/night-king.webp", false),
-    new Personaje("Robert Baratheon", "../media/personajes/robert-baratheon.webp", false),
-    new Personaje("Tyrion Lannister", "../media/personajes/tyrion-lannister.jpg", false),
-    new Personaje("Hodor", "../media/personajes/hodor.jpg", false)
-]
+//accion para barajar el array mazo
+function barajarMazo(mazo) {
+   mazo.sort(() => Math.random() - 0.5)
+}
 
-// SETEO DEL JUEGO
-
-// Generando mazo y barajandolo
-const mazo = personajes.concat(personajes)
-const barajar = ((array) => {
-    array.sort(() => Math.random() - 0.5)
-})(mazo)
-
-// tomando del documento elementos de las fichas
+//GENERANDO OBJETOS FICHA
+//Tomando del documento elementos de las fichas
 const divs = document.getElementsByClassName("tablero__ficha") //divs contenedores
 const dorso = document.getElementsByClassName("tablero__ficha--dorso") //img del trono
 const retrato = document.getElementsByClassName("tablero__ficha--retrato") //img del personaje
 
-for (let i = 0; i < retrato.length; i++) { // repartiendo retratos ocultos
+//accion para repartir retratos ocultos
+function repartirRetratos(retrato, mazo) {
+   for (let i = 0; i < retrato.length; i++) {
 
-    retrato[i].style.display = "none"
-    retrato[i].src = mazo[i].imagen
-    retrato[i].alt = `Retrato de ${mazo[i].nombre}`
+      retrato[i].style.display = "none"
+      retrato[i].src = mazo[i].imagen
+      retrato[i].alt = `Retrato de ${mazo[i].nombre}`
 
+   }
 }
 
-//generando los objetos ficha
+//constructor para las fichas
 class Ficha {
-    constructor(ficha, personaje, dorso, retrato, tocada) {
-        this.ficha = ficha
-        this.personaje = personaje
-        this.dorso = dorso
-        this.retrato = retrato
-        this.tocada = tocada
-    }
+   constructor(ficha, personaje, dorso, retrato, tocada) {
+      this.ficha = ficha
+      this.personaje = personaje
+      this.dorso = dorso
+      this.retrato = retrato
+      this.tocada = tocada
+   }
 }
 
-const fichas = [] // Array con los objetos ficha
-for (let i = 0; i < divs.length; i++) {
+//funcion para generar objetos ficha en un array
+function generarFichas(divs, mazo, dorso, retrato) {
+   const fichas = []
+   for (let i = 0; i < divs.length; i++) {
 
-    fichas.push(new Ficha(divs[i], mazo[i], dorso[i], retrato[i], false))
+      fichas.push(new Ficha(divs[i], mazo[i], dorso[i], retrato[i], false))
 
+   }
+   return fichas
 }
 
-// PROCESO DEL JUEGO - Acciones y eventos
-
+// ----- FUCION CONTROLADORA DEL PROCESO DE JUEGO ---------
+//controladores
 let elecciones = []
 let eleccionA = ""
 let eleccionB = ""
 let victoria = 0
 
-for (let i = 0; i < fichas.length; i++) {
+function controladorDelJuego(fichas) {
 
-    fichas[i].ficha.addEventListener("click", () => {
+   for (let i = 0; i < fichas.length; i++) {
 
-        if (fichas[i].personaje.hallado === false) {
+      fichas[i].ficha.addEventListener("click", () => {
 
+         //condicional mayor, evita tocar personajes hallados
+         if (fichas[i].personaje.hallado === false) {
+
+            //condicional para segunda eleccion
             if (elecciones.length === 1 && fichas[i].tocada === false) {
 
-                console.log(elecciones[0].personaje.nombre)
-                console.log(fichas[i].personaje.nombre)
+               elecciones.push(fichas[i])
 
-                elecciones.push(fichas[i])
-
-                fichas[i].retrato.style.display = "block"
-                fichas[i].dorso.style.display = "none"
+               fichas[i].retrato.style.display = "block"
+               fichas[i].dorso.style.display = "none"
 
             }
 
+            //condicional para primera eleccion
             if (elecciones.length === 0) {
 
-                elecciones.push(fichas[i])
+               elecciones.push(fichas[i])
 
-                fichas[i].retrato.style.display = "block"
-                fichas[i].dorso.style.display = "none"
-                fichas[i].tocada = true
-                console.log(fichas[i])
+               fichas[i].retrato.style.display = "block"
+               fichas[i].dorso.style.display = "none"
+               fichas[i].tocada = true
+
             }
 
-
+            //condicional para comparar tras segunda eleccion
             if (elecciones.length === 2) {
 
-                eleccionA = elecciones[0].personaje.nombre
-                eleccionB = elecciones[1].personaje.nombre
+               eleccionA = elecciones[0].personaje.nombre
+               eleccionB = elecciones[1].personaje.nombre
 
-                if (eleccionA === eleccionB) {
+               //si elecciones coinciden indicamos personje hallado y reiniciamos controladores
+               if (eleccionA === eleccionB) {
 
-                    for (const ficha of fichas) {
+                  for (const ficha of fichas) {
 
-                        if (eleccionA === ficha.personaje.nombre) {
+                     if (eleccionA === ficha.personaje.nombre) {
 
-                            ficha.personaje.hallado = true
-                            console.log(ficha)
+                        ficha.personaje.hallado = true
 
+                     }
+                  }
+
+                  elecciones = []
+                  eleccionA = ""
+                  eleccionB = ""
+                  victoria = victoria + 2
+
+                  //si completamos juego indicamos la victoria
+                  if (victoria === fichas.length) {
+
+                     setTimeout(() => {
+
+                        Swal.fire({
+
+                           title: '¡Ganaste!',
+                           text: "¡Encontraste todas las fichas! ¿Jugamos denuevo?",
+                           icon: 'success',
+                           showCancelButton: true,
+                           confirmButtonColor: '#3085d6',
+                           cancelButtonColor: '#d33',
+                           confirmButtonText: '¡Volver a jugar!',
+                           cancelButtonText: 'Cancelar'
+
+                           //si aceptamos volver a jugar, volteamos las fichas y reiniciamos juego
+                        }).then((result) => {
+
+                           if (result.isConfirmed) {
+
+                              for (let i = 0; i < fichas.length; i++) {
+
+                                 fichas[i].retrato.style.display = "none"
+                                 fichas[i].dorso.style.display = "block"
+
+                              }
+
+                              reiniciarJuego()
+                           }
+                        })
+                     }, 500);
+                  }
+
+                  //si personajes no coinciden volteamos las fichas y reiniciamos controladores
+               } else {
+
+                  setTimeout(() => {
+
+                     for (let index = 0; index < fichas.length; index++) {
+
+                        if (fichas[index].personaje.hallado === false) {
+                           fichas[index].dorso.style.display = "block"
+                           fichas[index].retrato.style.display = "none"
+                           fichas[index].tocada = false
                         }
-                    }
 
-                    elecciones = []
-                    eleccionA = ""
-                    eleccionB = ""
-                    victoria = victoria + 2
+                     }
 
-                    if (victoria === fichas.length) {
-                        setTimeout(() => {
-                            alert("GANASTE")
-                        }, 1000);
-                    }
+                     elecciones = []
+                     eleccionA = ""
+                     eleccionB = ""
 
-                } else {
-
-                    setTimeout(() => {
-
-                        for (let index = 0; index < fichas.length; index++) {
-
-                            if (fichas[index].personaje.hallado === false) {
-                                fichas[index].dorso.style.display = "block"
-                                fichas[index].retrato.style.display = "none"
-                                fichas[index].tocada = false
-                            }
-
-                        }
-
-                        elecciones = []
-                        eleccionA = ""
-                        eleccionB = ""
-
-                    }, 1000);
-                }
+                  }, 1000);
+               }
             }
-        }
-    })
-}
-
-// REGISTRO DE JUGADOR
-
-/*
-const modal = document.getElementById("modal")
-modal.showModal()
-
-const nombre = document.getElementById("form__nombre")
-const edad = document.getElementById("form__edad")
-const submit = document.getElementById("form__submit")
-const jugador = document.getElementById("jugador")
-const jugadorEdad = document.getElementById("jugadorEdad")
-
-submit.addEventListener("click",()=>{
-
-    const nuevoJugador={
-        nombre: nombre.value,
-        edad: edad.value
-    }
-
-    localStorage.setItem("NuevoJugador",JSON.stringify(nuevoJugador))
-
-    const jugadorActual = JSON.parse(localStorage.getItem("NuevoJugador"))
-    jugador.innerText = jugadorActual.nombre
-    jugadorEdad.innerText = jugadorActual.edad
-
-})
-*/
-
-// codigo momentaneamente en desuso
-/*
-
-function comparacion(eleccionA, eleccionB) { //eliminando coincidencias
-
-    if (fichasBarajadas[eleccionA].nombre === fichasBarajadas[eleccionB].nombre) {
-
-        alert(`¡Felicitaciones! Encontraste al par ${fichasBarajadas[eleccionB].nombre}`)
-
-        //conviritendo index a nombre para evitar cambio de numero
-        let eliminacion = fichasBarajadas[eleccionA].nombre
-
-        for (let i = 0; i < fichasBarajadas.length; i++) {
-
-            if (fichasBarajadas[i].nombre === eliminacion) {
-                fichasBarajadas.splice(i, 1)
-            }
-
-        }
-
-        //repeticion del bucle para evitar omision de parejas contiguas
-        for (let i = 0; i < fichasBarajadas.length; i++) {
-
-            if (fichasBarajadas[i].nombre === eliminacion) {
-                fichasBarajadas.splice(i, 1)
-            }
-
-        }
-    }
+         }
+      })
+   }
 
 }
 
-*/
+// Funcion de inicio: obteniendo datos de personajes, ejecutando juego
+
+const iniciarJuego = async () => {
+
+   const response = await fetch("/script/personajes.json")
+   const personajes = await response.json()
+
+   const mazo = generarMazo(personajes)
+   barajarMazo(mazo)
+
+   repartirRetratos(retrato, mazo)
+
+   const fichas = generarFichas(divs, mazo, dorso, retrato)
+
+   controladorDelJuego(fichas)
+
+}
+
+//funcion para reiniciar juego
+const reiniciarJuego = () => {
+
+   elecciones = []
+   eleccionA = ""
+   eleccionB = ""
+   victoria = 0
+
+   const tablero = document.getElementById("tablero")
+
+   const nuevoTablero = tablero.cloneNode(true)
+   tablero.parentNode.replaceChild(nuevoTablero, tablero)
+
+   iniciarJuego()
+
+}
+
+iniciarJuego()

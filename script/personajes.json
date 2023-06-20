@@ -1,42 +1,42 @@
 [
     {
       "nombre": "Daenerys Targaryen",
-      "imagen": "../media/personajes/daenerys-targaryen.jpg",
+      "imagen": "./media/personajes/daenerys-targaryen.jpg",
       "hallado": false
     },
     {
       "nombre": "Jon Snow",
-      "imagen": "../media/personajes/jon-snow.jpg",
+      "imagen": "./media/personajes/jon-snow.jpg",
       "hallado": false
     },
     {
       "nombre": "Drogon",
-      "imagen": "../media/personajes/drogon.jpg",
+      "imagen": "./media/personajes/drogon.jpg",
       "hallado": false
     },
     {
       "nombre": "Ned Stark",
-      "imagen": "../media/personajes/ned-stark.webp",
+      "imagen": "./media/personajes/ned-stark.webp",
       "hallado": false
     },
     {
       "nombre": "El señor de la noche",
-      "imagen": "../media/personajes/night-king.webp",
+      "imagen": "./media/personajes/night-king.webp",
       "hallado": false
     },
     {
       "nombre": "Robert Baratheon",
-      "imagen": "../media/personajes/robert-baratheon.webp",
+      "imagen": "./media/personajes/robert-baratheon.webp",
       "hallado": false
     },
     {
       "nombre": "Tyrion Lannister",
-      "imagen": "../media/personajes/tyrion-lannister.jpg",
+      "imagen": "./media/personajes/tyrion-lannister.jpg",
       "hallado": false
     },
     {
       "nombre": "Hodor",
-      "imagen": "../media/personajes/hodor.jpg",
+      "imagen": "./media/personajes/hodor.jpg",
       "hallado": false
     }
   ]  

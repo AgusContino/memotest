@@ -1,3 +1,4 @@
+/*
 // REGISTRO DE JUGADOR
 
 const jugador = document.getElementById("jugador")
@@ -34,6 +35,7 @@ Swal.fire({
    jugadorEdad.innerText = jugadorActual.edad
 
 })
+*/
 
 // ----- ACCIONES PARA SETEAR EL JUEGO -------
 
